@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VK Traders</string>
+    <string name="title_activity_main">VK Traders</string>
+    <string name="package_name">com.vktraders.labourmanagement</string>
+    <string name="custom_url_scheme">com.vktraders.labourmanagement</string>
+</resources>

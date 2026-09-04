@@ -1,0 +1,9 @@
+{
+  "appId": "com.vktraders.labourmanagement",
+  "appName": "VK Traders",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}
