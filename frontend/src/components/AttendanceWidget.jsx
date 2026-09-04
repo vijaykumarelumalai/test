@@ -5,6 +5,7 @@ import {
   Filter, 
   Save, 
   CheckCheck, 
+  XCircle,
   Sparkles,
   ChevronLeft,
   ChevronRight
@@ -130,20 +131,33 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
           </div>
         </div>
 
-        {/* Date Selector */}
-        <div className="flex items-center gap-2">
+        {/* Date Selector & Shortcut Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="px-3.5 py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs font-semibold text-slate-700 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition"
           />
+          
+          {/* Mark All Present Shortcut */}
           <button
             onClick={() => handleMarkAll('PRESENT')}
-            className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200 flex items-center gap-1.5 transition"
+            className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl border border-emerald-200 flex items-center gap-1.5 transition active:scale-95"
+            title="Mark all workers Present for today"
           >
             <CheckCheck className="w-4 h-4" />
             <span>Mark All Present</span>
+          </button>
+
+          {/* Mark All Absent (Holiday) Shortcut (Added per user request) */}
+          <button
+            onClick={() => handleMarkAll('ABSENT')}
+            className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 flex items-center gap-1.5 transition active:scale-95"
+            title="Mark all workers Absent for Holiday or site shutdown"
+          >
+            <XCircle className="w-4 h-4" />
+            <span>Mark All Absent (Holiday)</span>
           </button>
         </div>
       </div>
@@ -196,7 +210,7 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
               </th>
               <th className="py-3 px-3 w-8">#</th>
               <th className="py-3 px-3">Labour ID</th>
-              <th className="py-3 px-4">Name</th>
+              <th className="py-3 px-4">Name & Login Info</th>
               <th className="py-3 px-3">Type</th>
               <th className="py-3 px-4">Department/Site</th>
               <th className="py-3 px-3">Daily Wage (₹)</th>
