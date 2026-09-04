@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: vk-traders-labour-mgmt
+    env: node
+    plan: free
+    buildCommand: npm install && cd frontend && npm install && npm run build && cd ..
+    startCommand: node backend/src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true
