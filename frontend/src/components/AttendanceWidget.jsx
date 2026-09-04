@@ -233,8 +233,15 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
                     <td className="py-3.5 px-3 font-extrabold text-blue-700 tracking-tight">
                       {worker.labour_id}
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-slate-900">
-                      {worker.name}
+                    <td className="py-3.5 px-4">
+                      <div className="font-bold text-slate-900">{worker.name}</div>
+                      <div className="flex items-center gap-1.5 mt-0.5 text-[10px]">
+                        <span className="text-slate-500 font-medium">📱 {worker.login_phone || worker.phone}</span>
+                        <span className="text-slate-300">•</span>
+                        <span className="font-black text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded tracking-wider" title="Labour 4-digit PIN password">
+                          🔑 PIN: {worker.login_pin || (worker.phone ? worker.phone.slice(-4) : '0000')}
+                        </span>
+                      </div>
                     </td>
                     <td className="py-3.5 px-3">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${

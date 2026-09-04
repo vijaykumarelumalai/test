@@ -58,7 +58,11 @@ router.get('/', (req, res) => {
     }
 
     sql += ' ORDER BY id ASC';
-    const workers = query(sql, params);
+    const rawWorkers = query(sql, params);
+    const workers = rawWorkers.map(w => ({
+      ...w,
+      login_pin: w.phone ? w.phone.slice(-4) : '0000'
+    }));
     return res.json({ workers });
   } catch (err) {
     console.error('Fetch workers error:', err);

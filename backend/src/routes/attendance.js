@@ -41,7 +41,13 @@ router.get('/by-date', (req, res) => {
 
     sql += ' ORDER BY w.id ASC';
 
-    const roster = query(sql, params);
+    const rawRoster = query(sql, params);
+    const roster = rawRoster.map(w => ({
+      ...w,
+      login_phone: w.phone,
+      login_pin: w.phone ? w.phone.slice(-4) : '0000'
+    }));
+
     return res.json({ date: targetDate, roster });
   } catch (err) {
     console.error('Fetch daily attendance error:', err);
