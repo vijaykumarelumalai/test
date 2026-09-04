@@ -1,4 +1,5 @@
-const API_BASE = '/api/v1';
+const API_HOST = import.meta.env.VITE_API_HOST || '';
+const API_BASE = `${API_HOST}/api/v1`;
 
 export async function fetchApi(endpoint, options = {}) {
   const token = localStorage.getItem('vk_token');
@@ -65,7 +66,10 @@ export const api = {
   // Labour Portal
   getLabourSummary: (month = '') => fetchApi(`/labour/my-summary${month ? `?month=${month}` : ''}`),
 
-  // Settings
+  // Settings & Audit Logs
   getSettings: () => fetchApi('/settings'),
-  updateSettings: (settings) => fetchApi('/settings', { method: 'PUT', body: JSON.stringify({ settings }) })
+  updateSettings: (settings, adminEmail = '') => fetchApi('/settings', { method: 'PUT', body: JSON.stringify({ settings, adminEmail }) }),
+  getAuditLogs: (limit = 50) => fetchApi(`/settings/audit-logs?limit=${limit}`),
+  clearAuditLogs: () => fetchApi('/settings/audit-logs', { method: 'DELETE' }),
+  purgeMockData: () => fetchApi('/settings/purge-mock-data', { method: 'POST' })
 };

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Plus, IndianRupee, CheckCircle2, Building, Calendar, Percent } from 'lucide-react';
 import { api } from '../api';
+import { translations } from '../translations';
 
-export default function LoanManager() {
+export default function LoanManager({ language = 'en' }) {
+  const t = translations[language] || translations.en;
   const [loans, setLoans] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [totalBalance, setTotalBalance] = useState(0);
@@ -90,11 +92,11 @@ export default function LoanManager() {
   return (
     <div className="space-y-6">
       {/* Header with Add Loan Button (Renamed per client requirement) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Worker Loan Management</h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Track individual loans, funding source, principal, interest, and remaining balance
+          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">{t.workerLoans || 'Worker Loan Management'}</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {t.loansSubtitle || 'Track individual loans, funding source, principal, interest, and remaining balance'}
           </p>
         </div>
 
@@ -104,74 +106,76 @@ export default function LoanManager() {
           className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-blue-600/30 transition active:scale-95"
         >
           <Plus className="w-4 h-4" />
-          <span>Add Loan</span>
+          <span>{t.addLoan || 'Add Loan'}</span>
         </button>
       </div>
 
       {/* Summary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Principal Disbursed</span>
-          <p className="text-xl font-black text-slate-900 mt-1">₹{totalPrincipal.toLocaleString('en-IN')}</p>
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors">
+          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">{t.totalPrincipalDisbursed || 'Total Principal Disbursed'}</span>
+          <p className="text-xl font-black text-slate-900 dark:text-white mt-1">₹{totalPrincipal.toLocaleString('en-IN')}</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Interest Accrued</span>
-          <p className="text-xl font-black text-amber-600 mt-1">₹{totalInterest.toLocaleString('en-IN')}</p>
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors">
+          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">{t.totalInterestAccrued || 'Total Interest Accrued'}</span>
+          <p className="text-xl font-black text-amber-600 dark:text-amber-400 mt-1">₹{totalInterest.toLocaleString('en-IN')}</p>
         </div>
-        <div className="bg-blue-50 p-4 rounded-2xl border border-blue-200 shadow-xs">
-          <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block">Total Outstanding Balance</span>
-          <p className="text-xl font-black text-blue-800 mt-1">₹{totalBalance.toLocaleString('en-IN')}</p>
+        <div className="bg-blue-50 dark:bg-blue-950/40 p-4 rounded-2xl border border-blue-200 dark:border-blue-800/80 shadow-xs transition-colors">
+          <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block">{t.totalActiveLoanBalance || 'Total Outstanding Balance'}</span>
+          <p className="text-xl font-black text-blue-800 dark:text-blue-200 mt-1">₹{totalBalance.toLocaleString('en-IN')}</p>
         </div>
       </div>
 
       {/* Loans Table with Required Fields: S.No, Loan Provided From, Principal, Date, Interest Amount, Total */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 uppercase font-bold border-b border-slate-100 text-[10px]">
+            <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 uppercase font-bold border-b border-slate-100 dark:border-slate-800 text-[10px]">
               <tr>
-                <th className="py-3 px-3 w-12">S.No</th>
-                <th className="py-3 px-3">Loan ID</th>
-                <th className="py-3 px-4">Labour Name</th>
-                <th className="py-3 px-4">Loan Provided From</th>
-                <th className="py-3 px-4">Principal (₹)</th>
-                <th className="py-3 px-3">Date</th>
-                <th className="py-3 px-3">Interest (₹)</th>
-                <th className="py-3 px-4">Total Amount</th>
-                <th className="py-3 px-4">Remaining Balance</th>
-                <th className="py-3 px-3">Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3 px-3 w-12">{t.sNo || 'S.No'}</th>
+                <th className="py-3 px-3">{t.loanId || 'Loan ID'}</th>
+                <th className="py-3 px-4">{t.worker || 'Labour Name'}</th>
+                <th className="py-3 px-4">{t.loanProvidedFrom || 'Loan Provided From'}</th>
+                <th className="py-3 px-4">{t.principalAmount || 'Principal (₹)'}</th>
+                <th className="py-3 px-3">{t.date || 'Date'}</th>
+                <th className="py-3 px-3">{t.interestAmount || 'Interest (₹)'}</th>
+                <th className="py-3 px-4">{t.totalPayable || 'Total Amount'}</th>
+                <th className="py-3 px-4">{t.balanceRemaining || 'Remaining Balance'}</th>
+                <th className="py-3 px-3">{t.status || 'Status'}</th>
+                <th className="py-3 px-4 text-right">{t.actions || 'Actions'}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loans.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="py-12 text-center text-slate-400">
+                  <td colSpan={11} className="py-12 text-center text-slate-400 dark:text-slate-500">
                     No active or historical loans recorded. Click "Add Loan" to create one.
                   </td>
                 </tr>
               ) : (
                 loans.map((l) => (
-                  <tr key={l.id} className="hover:bg-slate-50">
-                    <td className="py-3.5 px-3 font-bold text-slate-400">{l.s_no}</td>
-                    <td className="py-3.5 px-3 font-black text-slate-700">{l.loan_id}</td>
+                  <tr key={l.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="py-3.5 px-3 font-bold text-slate-400 dark:text-slate-500">{l.s_no}</td>
+                    <td className="py-3.5 px-3 font-black text-slate-700 dark:text-slate-300">{l.loan_id}</td>
                     <td className="py-3.5 px-4">
-                      <p className="font-bold text-slate-900">{l.worker_name}</p>
-                      <span className="text-[10px] font-black text-blue-700">{l.labour_id}</span>
+                      <p className="font-bold text-slate-900 dark:text-white">{l.worker_name}</p>
+                      <span className="text-[10px] font-black text-blue-700 dark:text-blue-400">{l.labour_id}</span>
                     </td>
-                    <td className="py-3.5 px-4 font-semibold text-slate-800">
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
+                    <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700">
                         {l.loan_provided_from}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 font-bold text-slate-900">₹{Number(l.principal_amount).toLocaleString('en-IN')}</td>
-                    <td className="py-3.5 px-3 text-slate-500 font-medium">{l.disbursed_date}</td>
-                    <td className="py-3.5 px-3 font-bold text-amber-700">₹{Number(l.interest_amount).toLocaleString('en-IN')}</td>
-                    <td className="py-3.5 px-4 font-bold text-slate-800">₹{Number(l.total_payable).toLocaleString('en-IN')}</td>
-                    <td className="py-3.5 px-4 font-black text-rose-600 text-sm">₹{Number(l.balance_remaining).toLocaleString('en-IN')}</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">₹{Number(l.principal_amount).toLocaleString('en-IN')}</td>
+                    <td className="py-3.5 px-3 text-slate-500 dark:text-slate-400 font-medium">{l.disbursed_date}</td>
+                    <td className="py-3.5 px-3 font-bold text-amber-700 dark:text-amber-400">₹{Number(l.interest_amount).toLocaleString('en-IN')}</td>
+                    <td className="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">₹{Number(l.total_payable).toLocaleString('en-IN')}</td>
+                    <td className="py-3.5 px-4 font-black text-rose-600 dark:text-rose-400 text-sm">₹{Number(l.balance_remaining).toLocaleString('en-IN')}</td>
                     <td className="py-3.5 px-3">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        l.status === 'ACTIVE' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'
+                        l.status === 'ACTIVE' 
+                          ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800' 
+                          : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                       }`}>
                         {l.status}
                       </span>
@@ -184,7 +188,7 @@ export default function LoanManager() {
                             setRepayAmount(l.monthly_deduction || '');
                             setShowRepayModal(true);
                           }}
-                          className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold border border-emerald-200"
+                          className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-lg text-xs font-bold border border-emerald-200 dark:border-emerald-800 transition"
                         >
                           Repay
                         </button>
@@ -201,15 +205,15 @@ export default function LoanManager() {
       {/* Add Loan Modal (Renamed from Issue Loan) */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="font-extrabold text-base text-slate-900">Add Loan</h3>
-                <p className="text-[11px] text-slate-400">Auto-Generated S.No: <span className="font-bold text-blue-700">#{nextSNo}</span></p>
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">Add Loan</h3>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">Auto-Generated S.No: <span className="font-bold text-blue-700 dark:text-blue-400">#{nextSNo}</span></p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1"
+                className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 text-sm font-bold p-1"
               >
                 ✕
               </button>
@@ -217,11 +221,11 @@ export default function LoanManager() {
 
             <form onSubmit={handleAddLoan} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Select Labour <span className="text-rose-500">*</span></label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Select Labour <span className="text-rose-500">*</span></label>
                 <select
                   value={formData.workerId}
                   onChange={(e) => setFormData({ ...formData, workerId: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                   required
                 >
                   {workers.map(w => (
@@ -232,7 +236,7 @@ export default function LoanManager() {
 
               {/* Loan Provided From */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Loan Provided From <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -241,14 +245,14 @@ export default function LoanManager() {
                   value={formData.loanProvidedFrom}
                   onChange={(e) => setFormData({ ...formData, loanProvidedFrom: e.target.value })}
                   placeholder="e.g. VK Traders, Company Account, Partner Name"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                 />
               </div>
 
               {/* Principal Amount & Interest Amount */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Principal Amount (₹) <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -258,12 +262,12 @@ export default function LoanManager() {
                     value={formData.principalAmount}
                     onChange={(e) => setFormData({ ...formData, principalAmount: e.target.value })}
                     placeholder="e.g. 20000"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Interest Amount (₹)
                   </label>
                   <input
@@ -272,7 +276,7 @@ export default function LoanManager() {
                     value={formData.interestAmount}
                     onChange={(e) => setFormData({ ...formData, interestAmount: e.target.value })}
                     placeholder="e.g. 1000 (0 for no interest)"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                   />
                 </div>
               </div>
@@ -280,7 +284,7 @@ export default function LoanManager() {
               {/* Disbursed Date & Monthly Deduction */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Date <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -288,12 +292,12 @@ export default function LoanManager() {
                     required
                     value={formData.disbursedDate}
                     onChange={(e) => setFormData({ ...formData, disbursedDate: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Monthly Deduction (₹)
                   </label>
                   <input
@@ -302,27 +306,27 @@ export default function LoanManager() {
                     value={formData.monthlyDeduction}
                     onChange={(e) => setFormData({ ...formData, monthlyDeduction: e.target.value })}
                     placeholder="e.g. 2000"
-                    className="w-full px-3.5 py-2 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                   />
                 </div>
               </div>
 
               {/* Total Payable Summary Banner */}
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-600">Total Loan Payable:</span>
-                <span className="font-black text-blue-800 text-sm">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span className="font-semibold text-slate-600 dark:text-slate-300">Total Loan Payable:</span>
+                <span className="font-black text-blue-800 dark:text-blue-300 text-sm">
                   ₹{((parseFloat(formData.principalAmount) || 0) + (parseFloat(formData.interestAmount) || 0)).toLocaleString('en-IN')}
                 </span>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Notes / Purpose</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Notes / Purpose</label>
                 <input
                   type="text"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="e.g. Medical emergency, wedding, tools..."
-                  className="w-full px-3.5 py-2 bg-slate-50 text-xs font-medium rounded-xl border border-slate-200 outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                 />
               </div>
 
@@ -330,13 +334,13 @@ export default function LoanManager() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs"
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/30"
+                  className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/30 transition active:scale-95"
                 >
                   Add Loan
                 </button>
@@ -349,12 +353,12 @@ export default function LoanManager() {
       {/* Repay Loan Modal */}
       {showRepayModal && selectedLoan && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-200">
-            <h3 className="font-extrabold text-base text-slate-900 mb-1">Record Repayment</h3>
-            <p className="text-xs text-slate-500 mb-4">{selectedLoan.worker_name} ({selectedLoan.loan_id})</p>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white mb-1">Record Repayment</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{selectedLoan.worker_name} ({selectedLoan.loan_id})</p>
             <form onSubmit={handleRepay} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Repayment Amount (₹)</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Repayment Amount (₹)</label>
                 <input
                   type="number"
                   required
@@ -362,9 +366,9 @@ export default function LoanManager() {
                   max={selectedLoan.balance_remaining}
                   value={repayAmount}
                   onChange={(e) => setRepayAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 text-xs font-bold rounded-xl border border-slate-200 outline-hidden"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-100 rounded-xl border border-slate-200 dark:border-slate-700 outline-hidden"
                 />
-                <span className="text-[10px] text-slate-400 mt-1 block">
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 block">
                   Current Balance: ₹{Number(selectedLoan.balance_remaining).toLocaleString('en-IN')}
                 </span>
               </div>
@@ -373,13 +377,13 @@ export default function LoanManager() {
                 <button
                   type="button"
                   onClick={() => setShowRepayModal(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs"
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md"
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition active:scale-95"
                 >
                   Confirm Repay
                 </button>

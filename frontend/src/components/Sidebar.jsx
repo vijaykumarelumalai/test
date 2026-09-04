@@ -12,15 +12,19 @@ import {
   X
 } from 'lucide-react';
 
-export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen, onSwitchToLabourView }) {
+import { translations } from '../translations';
+
+export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen, onSwitchToLabourView, language = 'en' }) {
+  const t = translations[language] || translations.en;
+
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'labour', label: 'Labour', icon: Users },
-    { id: 'attendance', label: 'Attendance', icon: CalendarCheck2 },
-    { id: 'advances', label: 'Advances', icon: Banknote },
-    { id: 'loans', label: 'Loan', icon: CreditCard },
-    { id: 'reports', label: 'Reports', icon: FileSpreadsheet },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: t.dashboard || 'Dashboard', icon: LayoutDashboard },
+    { id: 'labour', label: t.labour || 'Labour', icon: Users },
+    { id: 'attendance', label: t.attendance || 'Attendance', icon: CalendarCheck2 },
+    { id: 'advances', label: t.advances || 'Advances', icon: Banknote },
+    { id: 'loans', label: t.loans || 'Loans', icon: CreditCard },
+    { id: 'reports', label: t.reports || 'Reports', icon: FileSpreadsheet },
+    { id: 'settings', label: t.settings || 'Settings', icon: Settings },
   ];
 
   return (
@@ -46,8 +50,12 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen, on
                 <HardHat className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="font-extrabold text-sm tracking-tight text-white leading-tight">VK Traders</h1>
-                <p className="text-[11px] font-medium text-slate-400">Labour Management</p>
+                <h1 className="font-extrabold text-sm tracking-tight text-white leading-tight">
+                  {t.appName || 'VK Traders'}
+                </h1>
+                <p className="text-[11px] font-medium text-slate-400">
+                  {t.appSubtitle || 'Labour Management'}
+                </p>
               </div>
             </div>
             <button 
@@ -93,7 +101,7 @@ export default function Sidebar({ activeTab, setActiveTab, isOpen, setIsOpen, on
             className="w-full flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-emerald-400 text-xs font-semibold border border-emerald-500/20 transition-all hover:border-emerald-500/40 shadow-sm"
           >
             <Smartphone className="w-4 h-4" />
-            <span>Worker Mobile View</span>
+            <span>{t.switchToLabourView || 'Worker Mobile View'}</span>
           </button>
 
           {/* Decorative Motivational Card from Mockup */}

@@ -13,8 +13,10 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { api } from '../api';
+import { translations } from '../translations';
 
-export default function WorkerMobilePortal({ onBackToAdmin }) {
+export default function WorkerMobilePortal({ onBackToAdmin, language = 'ta' }) {
+  const t = translations[language] || translations.ta;
   const [workerSession, setWorkerSession] = useState(null);
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState('');
@@ -77,12 +79,12 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
   const advances = summaryData?.advances || [];
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-3 sm:p-6">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center p-3 sm:p-6 transition-colors">
       {/* Mobile Device Mockup Frame */}
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col min-h-[700px]">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col min-h-[700px]">
         
         {/* Top App Bar */}
-        <div className="bg-[#0f172a] text-white p-4 flex items-center justify-between sticky top-0 z-20">
+        <div className="bg-[#0f172a] dark:bg-slate-950 text-white p-4 flex items-center justify-between sticky top-0 z-20 border-b border-slate-800">
           <button
             onClick={onBackToAdmin}
             className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-white font-medium p-1"
@@ -108,24 +110,24 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
           /* Worker Login Screen */
           <div className="p-6 flex-1 flex flex-col justify-center">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-3xl flex items-center justify-center mx-auto mb-3 shadow-inner">
                 <Smartphone className="w-8 h-8" />
               </div>
-              <h2 className="text-xl font-black text-slate-900">Labour Login</h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <h2 className="text-xl font-black text-slate-900 dark:text-white">Labour Login</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Enter your registered mobile number and 4-digit PIN to see your attendance and wages
               </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
               {loginError && (
-                <div className="p-3 bg-rose-50 text-rose-700 text-xs font-bold rounded-xl border border-rose-200">
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 text-xs font-bold rounded-xl border border-rose-200 dark:border-rose-900/50">
                   {loginError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Number</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Mobile Number</label>
                 <input
                   type="tel"
                   required
@@ -133,12 +135,12 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Enter 10-digit mobile number"
-                  className="w-full px-4 py-3 bg-slate-50 text-sm font-bold rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">4-Digit PIN</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">4-Digit PIN</label>
                 <input
                   type="password"
                   required
@@ -146,7 +148,7 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}
                   placeholder="PIN (last 4 digits of phone)"
-                  className="w-full px-4 py-3 bg-slate-50 text-sm font-bold text-center tracking-widest rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white text-center tracking-widest rounded-xl border border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-hidden"
                 />
               </div>
 
@@ -180,16 +182,16 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
             </div>
 
             {/* Month Filter */}
-            <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
-              <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-blue-600" />
+            <div className="flex items-center justify-between bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+              <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 Select Month:
               </span>
               <input
                 type="month"
                 value={targetMonth}
                 onChange={(e) => setTargetMonth(e.target.value)}
-                className="text-xs font-bold text-slate-800 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200"
+                className="text-xs font-bold text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700"
               />
             </div>
 
@@ -208,48 +210,48 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
 
             {/* 3 Metric Mini Cards */}
             <div className="grid grid-cols-3 gap-2 text-center">
-              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Days Worked</span>
-                <span className="text-base font-black text-blue-700 mt-0.5 block">{summary.totalWorkedDays}</span>
+              <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
+                <span className="text-[10px] text-slate-400 dark:text-slate-400 font-bold uppercase block">Days Worked</span>
+                <span className="text-base font-black text-blue-700 dark:text-blue-400 mt-0.5 block">{summary.totalWorkedDays}</span>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Gross Wages</span>
-                <span className="text-base font-black text-slate-900 mt-0.5 block">₹{summary.grossWage}</span>
+              <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
+                <span className="text-[10px] text-slate-400 dark:text-slate-400 font-bold uppercase block">Gross Wages</span>
+                <span className="text-base font-black text-slate-900 dark:text-white mt-0.5 block">₹{summary.grossWage}</span>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
-                <span className="text-[10px] text-slate-400 font-bold uppercase block">Advances</span>
-                <span className="text-base font-black text-rose-600 mt-0.5 block">₹{summary.totalAdvances}</span>
+              <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
+                <span className="text-[10px] text-slate-400 dark:text-slate-400 font-bold uppercase block">Advances</span>
+                <span className="text-base font-black text-rose-600 dark:text-rose-400 mt-0.5 block">₹{summary.totalAdvances}</span>
               </div>
             </div>
 
             {/* Daily Attendance History List */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-              <h4 className="font-bold text-xs text-slate-900 mb-3 flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-xs">
+              <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-3 flex items-center justify-between">
                 <span>Daily Attendance Log</span>
-                <span className="text-[10px] text-slate-400 font-normal">
+                <span className="text-[10px] text-slate-400 dark:text-slate-400 font-normal">
                   {attendanceRecords.length} entries recorded
                 </span>
               </h4>
 
-              <div className="space-y-2 max-h-56 overflow-y-auto divide-y divide-slate-100">
+              <div className="space-y-2 max-h-56 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/60">
                 {attendanceRecords.length === 0 ? (
-                  <p className="text-center text-xs text-slate-400 py-6">No records for this month</p>
+                  <p className="text-center text-xs text-slate-400 dark:text-slate-500 py-6">No records for this month</p>
                 ) : (
                   attendanceRecords.map((r, idx) => (
                     <div key={idx} className="flex items-center justify-between pt-2">
                       <div>
-                        <span className="text-xs font-bold text-slate-800">{r.date}</span>
-                        <span className="text-[10px] text-slate-400 block">Wage: ₹{r.effective_daily_wage}</span>
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{r.date}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-400 block">Wage: ₹{r.effective_daily_wage}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                          r.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-800' :
-                          r.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-800' :
-                          'bg-rose-100 text-rose-800'
+                          r.status === 'PRESENT' ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300' :
+                          r.status === 'HALF_DAY' ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300' :
+                          'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300'
                         }`}>
                           {r.status}
                         </span>
-                        <span className="text-xs font-extrabold text-slate-900">
+                        <span className="text-xs font-extrabold text-slate-900 dark:text-white">
                           ₹{r.earned_amount}
                         </span>
                       </div>
@@ -261,16 +263,16 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
 
             {/* Advances History */}
             {advances.length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs">
-                <h4 className="font-bold text-xs text-slate-900 mb-2">Advances Received</h4>
+              <div className="bg-white dark:bg-slate-800/90 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-xs">
+                <h4 className="font-bold text-xs text-slate-900 dark:text-white mb-2">Advances Received</h4>
                 <div className="space-y-2">
                   {advances.map(a => (
                     <div key={a.id} className="flex items-center justify-between text-xs">
                       <div>
-                        <span className="font-bold text-slate-800">{a.date}</span>
-                        <span className="text-[10px] text-slate-400 block">{a.reason || 'Cash Advance'}</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">{a.date}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-400 block">{a.reason || 'Cash Advance'}</span>
                       </div>
-                      <span className="font-black text-rose-600">₹{a.amount}</span>
+                      <span className="font-black text-rose-600 dark:text-rose-400">₹{a.amount}</span>
                     </div>
                   ))}
                 </div>

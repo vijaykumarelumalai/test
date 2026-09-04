@@ -28,19 +28,23 @@ router.post('/admin-login', (req, res) => {
     });
   }
 
-  // Master admin credential
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@vktraders.com';
-  const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+  // Check credentials against system_settings first, then fallback to environment variables
+  const dbEmail = get("SELECT value FROM system_settings WHERE key = 'super_admin_email'")?.value;
+  const dbPass = get("SELECT value FROM system_settings WHERE key = 'super_admin_password'")?.value;
+  const dbName = get("SELECT value FROM system_settings WHERE key = 'super_admin_name'")?.value || 'Super Admin';
 
-  if (email === adminEmail && password === adminPass) {
+  const expectedEmail = dbEmail || process.env.ADMIN_EMAIL || 'admin@vktraders.com';
+  const expectedPass = dbPass || process.env.ADMIN_PASSWORD || 'admin123';
+
+  if (email === expectedEmail && password === expectedPass) {
     const token = jwt.sign(
-      { role: 'SUPER_ADMIN', email, name: 'Super Admin' },
+      { role: 'SUPER_ADMIN', email, name: dbName },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
     return res.json({
       token,
-      user: { role: 'SUPER_ADMIN', name: 'Super Admin', email }
+      user: { role: 'SUPER_ADMIN', name: dbName, email }
     });
   }
 

@@ -25,7 +25,7 @@ function generateNextLabourId() {
 // 0. Get Distinct Departments
 router.get('/departments', (req, res) => {
   try {
-    const rows = query('SELECT DISTINCT department FROM workers WHERE department IS NOT NULL AND department != "" ORDER BY department ASC');
+    const rows = query("SELECT DISTINCT department FROM workers WHERE department IS NOT NULL AND department != '' ORDER BY department ASC");
     const departments = rows.map(r => r.department);
     return res.json({ departments });
   } catch (err) {
