@@ -41,7 +41,7 @@ async function runTests() {
   console.log('✅ TC-DSH-001: Dashboard metrics endpoint verified.');
 
   // 2. Onboard New Worker with sequential VK-XXX and Tamil/English message
-  const testPhone = '9840999998';
+  const testPhone = '9840' + Math.floor(100000 + Math.random() * 900000);
   const newWorker = {
     name: 'Murugan Test',
     phone: testPhone,
@@ -120,6 +120,13 @@ async function runTests() {
   process.exit(0);
 }
 
-// Start backend and run tests
-require('../backend/src/server.js');
-setTimeout(runTests, 800);
+// Check if server is already running, otherwise start it
+const checkReq = http.request({ hostname: 'localhost', port: 5000, path: '/api/health', method: 'GET' }, () => {
+  runTests();
+});
+checkReq.on('error', () => {
+  require('../backend/src/server.js');
+  setTimeout(runTests, 800);
+});
+checkReq.end();
+

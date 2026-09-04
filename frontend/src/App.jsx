@@ -3,8 +3,6 @@ import Sidebar from './components/Sidebar';
 import TopHeader from './components/TopHeader';
 import MetricCards from './components/MetricCards';
 import AttendanceWidget from './components/AttendanceWidget';
-import AnalyticsWidgets from './components/AnalyticsWidgets';
-import RecentActivityWidgets from './components/RecentActivityWidgets';
 import LabourDirectory from './components/LabourDirectory';
 import AdvancesManager from './components/AdvancesManager';
 import LoanManager from './components/LoanManager';
@@ -14,12 +12,7 @@ import AddWorkerModal from './components/AddWorkerModal';
 import WorkerMobilePortal from './components/WorkerMobilePortal';
 import { 
   CalendarCheck, 
-  UserPlus, 
-  Banknote, 
-  CreditCard, 
-  FileSpreadsheet, 
-  ArrowRight,
-  Sparkles
+  UserPlus
 } from 'lucide-react';
 import { api } from './api';
 
@@ -140,75 +133,21 @@ export default function App() {
               {/* 5 Top KPI Metric Cards */}
               <MetricCards metrics={metrics} />
 
-              {/* Analytics Row: Donut Chart + Comparison Bars */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div className="lg:col-span-6">
-                  <AnalyticsWidgets metrics={metrics} onNavigate={setActiveTab} />
-                </div>
-                <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 flex flex-col justify-between">
+              {/* Attendance Marking Table directly on Dashboard */}
+              <div className="space-y-4">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                      <h3 className="font-bold text-sm text-slate-900">Quick Module Access</h3>
-                      <span className="text-[11px] font-semibold text-slate-400">Separate Pages</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 mt-4">
-                      <button
-                        onClick={() => setActiveTab('labour')}
-                        className="p-4 rounded-xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-300 text-left transition group"
-                      >
-                        <UserPlus className="w-5 h-5 text-blue-600 mb-2" />
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-700">Labour Directory</h4>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Manage workers & IDs</p>
-                      </button>
-
-                      <button
-                        onClick={() => setActiveTab('attendance')}
-                        className="p-4 rounded-xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200/80 hover:border-emerald-300 text-left transition group"
-                      >
-                        <CalendarCheck className="w-5 h-5 text-emerald-600 mb-2" />
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700">Mark Attendance</h4>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Roster & daily wage</p>
-                      </button>
-
-                      <button
-                        onClick={() => setActiveTab('advances')}
-                        className="p-4 rounded-xl bg-slate-50 hover:bg-rose-50/50 border border-slate-200/80 hover:border-rose-300 text-left transition group"
-                      >
-                        <Banknote className="w-5 h-5 text-rose-600 mb-2" />
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-rose-700">Advances Ledger</h4>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Log cash advances</p>
-                      </button>
-
-                      <button
-                        onClick={() => setActiveTab('loans')}
-                        className="p-4 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200/80 hover:border-purple-300 text-left transition group"
-                      >
-                        <CreditCard className="w-5 h-5 text-purple-600 mb-2" />
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-purple-700">Worker Loans</h4>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Amortized deductions</p>
-                      </button>
-                    </div>
+                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Daily Attendance Roster</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Mark daily presence, half-days, or variable daily wages. Shortcut buttons available for quick bulk marking.
+                    </p>
                   </div>
-
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs text-slate-500">Need month-end reports?</span>
-                    <button
-                      onClick={() => setActiveTab('reports')}
-                      className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                    >
-                      <span>Open Reports Page</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+                  <span className="self-start sm:self-auto px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                    Multiplier: 1.0x / 0.5x / 0.0x
+                  </span>
                 </div>
+                <AttendanceWidget onAttendanceSaved={loadDashboardData} />
               </div>
-
-              {/* Bottom 3 Activity Feed Cards */}
-              <RecentActivityWidgets 
-                recentActivity={recentActivity} 
-                onNavigate={setActiveTab} 
-              />
             </div>
           )}
 
