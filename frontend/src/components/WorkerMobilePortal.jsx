@@ -16,8 +16,8 @@ import { api } from '../api';
 
 export default function WorkerMobilePortal({ onBackToAdmin }) {
   const [workerSession, setWorkerSession] = useState(null);
-  const [phone, setPhone] = useState('9840111111'); // prefilled with sample worker Ramesh Kumar
-  const [pin, setPin] = useState('1111');
+  const [phone, setPhone] = useState('');
+  const [pin, setPin] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -75,7 +75,6 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
 
   const attendanceRecords = summaryData?.attendanceRecords || [];
   const advances = summaryData?.advances || [];
-  const loan = summaryData?.loan;
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-3 sm:p-6">
@@ -92,7 +91,7 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
             <span>Admin View</span>
           </button>
           <span className="font-extrabold text-sm tracking-tight text-amber-400">
-            VK Traders Mobile
+            Worker Portal
           </span>
           {workerSession && (
             <button
@@ -114,7 +113,7 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
               </div>
               <h2 className="text-xl font-black text-slate-900">Labour Login</h2>
               <p className="text-xs text-slate-500 mt-1">
-                Enter your mobile number and 4-digit PIN to see your attendance and wages
+                Enter your registered mobile number and 4-digit PIN to see your attendance and wages
               </p>
             </div>
 
@@ -133,7 +132,7 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
                   maxLength={10}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="10-digit mobile number"
+                  placeholder="Enter 10-digit mobile number"
                   className="w-full px-4 py-3 bg-slate-50 text-sm font-bold rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden"
                 />
               </div>
@@ -146,7 +145,7 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
                   maxLength={4}
                   value={pin}
                   onChange={(e) => setPin(e.target.value)}
-                  placeholder="Last 4 digits of phone"
+                  placeholder="PIN (last 4 digits of phone)"
                   className="w-full px-4 py-3 bg-slate-50 text-sm font-bold text-center tracking-widest rounded-xl border border-slate-200 focus:border-blue-500 outline-hidden"
                 />
               </div>
@@ -159,12 +158,6 @@ export default function WorkerMobilePortal({ onBackToAdmin }) {
                 {loading ? 'Logging in...' : 'View My Attendance & Wages'}
               </button>
             </form>
-
-            <div className="mt-8 p-3 rounded-xl bg-blue-50/50 border border-blue-100 text-center">
-              <span className="text-[11px] text-blue-700 font-medium">
-                Demo: Log in with <span className="font-bold">9840111111</span> & PIN <span className="font-bold">1111</span> (Ramesh Kumar VK-001)
-              </span>
-            </div>
           </div>
         ) : (
           /* Worker Dashboard */

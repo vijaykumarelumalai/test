@@ -32,6 +32,7 @@ export const api = {
 
   // Workers
   getWorkers: (params = '') => fetchApi(`/workers${params}`),
+  getDepartments: () => fetchApi('/workers/departments'),
   createWorker: (data) => fetchApi('/workers', { method: 'POST', body: JSON.stringify(data) }),
   updateWorker: (id, data) => fetchApi(`/workers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteWorker: (id) => fetchApi(`/workers/${id}`, { method: 'DELETE' }),

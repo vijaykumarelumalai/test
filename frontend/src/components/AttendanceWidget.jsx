@@ -15,6 +15,7 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [roster, setRoster] = useState([]);
   const [filteredRoster, setFilteredRoster] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [search, setSearch] = useState('');
   const [filterDept, setFilterDept] = useState('ALL');
   const [filterType, setFilterType] = useState('ALL');
@@ -28,13 +29,19 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
 
   const loadRoster = async () => {
     try {
-      const res = await api.getAttendanceByDate(selectedDate);
+      const [res, deptRes] = await Promise.all([
+        api.getAttendanceByDate(selectedDate),
+        api.getDepartments().catch(() => ({ departments: [] }))
+      ]);
       const data = (res.roster || []).map(item => ({
         ...item,
-        currentStatus: item.status !== 'UNMARKED' ? item.status : 'PRESENT', // default to Present if unmarked
+        currentStatus: item.status !== 'UNMARKED' ? item.status : 'PRESENT',
         wageInput: item.effective_daily_wage || item.default_daily_wage
       }));
       setRoster(data);
+      if (deptRes.departments) {
+        setDepartments(deptRes.departments);
+      }
     } catch (err) {
       console.error('Failed to load roster:', err);
     }
@@ -155,15 +162,16 @@ export default function AttendanceWidget({ onAttendanceSaved }) {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Dynamic Departments Filter */}
           <select
             value={filterDept}
             onChange={(e) => setFilterDept(e.target.value)}
             className="px-3 py-2 bg-white text-xs font-medium text-slate-700 rounded-xl border border-slate-200 outline-hidden flex-1 sm:flex-none"
           >
             <option value="ALL">All Departments/Sites</option>
-            <option value="Construction Site A">Construction Site A</option>
-            <option value="Construction Site B">Construction Site B</option>
-            <option value="Maintenance">Maintenance</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
           </select>
 
           <select

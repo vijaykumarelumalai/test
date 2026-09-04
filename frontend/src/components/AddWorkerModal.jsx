@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   UserPlus, 
@@ -15,15 +15,29 @@ export default function AddWorkerModal({ isOpen, onClose, onWorkerCreated }) {
     name: '',
     phone: '',
     workerType: 'PERMANENT',
-    department: 'Construction Site A',
-    dailyWage: '800',
+    department: '',
+    dailyWage: '',
     emergencyContact: ''
   });
 
+  const [departments, setDepartments] = useState([]);
+  const [customDept, setCustomDept] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [createdResult, setCreatedResult] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      api.getDepartments().then(res => {
+        const depts = res.departments || [];
+        setDepartments(depts);
+        if (depts.length > 0 && !formData.department) {
+          setFormData(prev => ({ ...prev, department: depts[0] }));
+        }
+      }).catch(console.error);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -33,7 +47,11 @@ export default function AddWorkerModal({ isOpen, onClose, onWorkerCreated }) {
     setLoading(true);
 
     try {
-      const res = await api.createWorker(formData);
+      const finalDept = customDept.trim() || formData.department || 'General Site';
+      const res = await api.createWorker({
+        ...formData,
+        department: finalDept
+      });
       setCreatedResult(res);
       if (onWorkerCreated) onWorkerCreated();
     } catch (err) {
@@ -58,10 +76,11 @@ export default function AddWorkerModal({ isOpen, onClose, onWorkerCreated }) {
       name: '',
       phone: '',
       workerType: 'PERMANENT',
-      department: 'Construction Site A',
-      dailyWage: '800',
+      department: departments[0] || '',
+      dailyWage: '',
       emergencyContact: ''
     });
+    setCustomDept('');
     onClose();
   };
 
@@ -215,16 +234,32 @@ export default function AddWorkerModal({ isOpen, onClose, onWorkerCreated }) {
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     Department / Site
                   </label>
-                  <select
-                    value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-slate-50 text-xs font-bold text-slate-800 rounded-xl border border-slate-200 outline-hidden"
-                  >
-                    <option value="Construction Site A">Construction Site A</option>
-                    <option value="Construction Site B">Construction Site B</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Loading & Transport">Loading & Transport</option>
-                  </select>
+                  {departments.length > 0 && !customDept ? (
+                    <select
+                      value={formData.department}
+                      onChange={(e) => {
+                        if (e.target.value === '__CUSTOM__') {
+                          setCustomDept(' ');
+                        } else {
+                          setFormData({ ...formData, department: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 text-xs font-bold text-slate-800 rounded-xl border border-slate-200 outline-hidden"
+                    >
+                      {departments.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                      <option value="__CUSTOM__">+ New Department...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="Enter department/site name"
+                      value={customDept.trim()}
+                      onChange={(e) => setCustomDept(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-50 text-xs font-bold text-slate-800 rounded-xl border border-slate-200 outline-hidden"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -241,10 +276,25 @@ export default function AddWorkerModal({ isOpen, onClose, onWorkerCreated }) {
                     min={0}
                     value={formData.dailyWage}
                     onChange={(e) => setFormData({ ...formData, dailyWage: e.target.value })}
-                    placeholder="e.g. 800"
+                    placeholder="Enter daily wage amount"
                     className="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-hidden"
                   />
                 </div>
+              </div>
+
+              {/* Emergency Contact */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Emergency Contact (Optional)
+                </label>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={formData.emergencyContact}
+                  onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                  placeholder="Optional contact number"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 rounded-xl border border-slate-200 outline-hidden"
+                />
               </div>
 
               {/* Submit Button */}

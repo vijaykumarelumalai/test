@@ -2,29 +2,64 @@ const express = require('express');
 const router = express.Router();
 const { query, get } = require('../db');
 
+function calculateTrend(current, previous) {
+  if (!previous || previous === 0) {
+    if (current > 0) return { text: `+${current} new`, isUp: true };
+    return { text: '0% change', isUp: true };
+  }
+  const pct = Math.round(((current - previous) / previous) * 100);
+  if (pct >= 0) {
+    return { text: `↑ ${pct}% vs last mo`, isUp: true };
+  } else {
+    return { text: `↓ ${Math.abs(pct)}% vs last mo`, isUp: false };
+  }
+}
+
 router.get('/metrics', (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
-    const currentMonth = today.slice(0, 7); // YYYY-MM
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const currentMonth = todayStr.slice(0, 7); // YYYY-MM
+
+    // Calculate previous month string (YYYY-MM)
+    const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const prevMonth = prevMonthDate.toISOString().slice(0, 7);
 
     // 1. Total, Permanent, Temporary Labour
     const totalWorkers = get('SELECT count(*) as count FROM workers WHERE is_active = 1')?.count || 0;
     const permWorkers = get("SELECT count(*) as count FROM workers WHERE is_active = 1 AND worker_type = 'PERMANENT'")?.count || 0;
     const tempWorkers = get("SELECT count(*) as count FROM workers WHERE is_active = 1 AND worker_type = 'TEMPORARY'")?.count || 0;
 
-    // 2. Gross Wages for Current Month (Σ earned_amount)
+    // Previous month worker counts
+    const prevTotal = get("SELECT count(*) as count FROM workers WHERE is_active = 1 AND strftime('%Y-%m', joining_date) <= ?", [prevMonth])?.count || 0;
+    const prevPerm = get("SELECT count(*) as count FROM workers WHERE is_active = 1 AND worker_type = 'PERMANENT' AND strftime('%Y-%m', joining_date) <= ?", [prevMonth])?.count || 0;
+    const prevTemp = get("SELECT count(*) as count FROM workers WHERE is_active = 1 AND worker_type = 'TEMPORARY' AND strftime('%Y-%m', joining_date) <= ?", [prevMonth])?.count || 0;
+
+    // 2. Gross Wages for Current Month vs Previous Month
     const monthlyGross = get(`
       SELECT COALESCE(SUM(earned_amount), 0) as total 
       FROM attendance 
       WHERE strftime('%Y-%m', date) = ?
     `, [currentMonth])?.total || 0;
 
-    // 3. Total Advances & Active Loans
+    const prevMonthlyGross = get(`
+      SELECT COALESCE(SUM(earned_amount), 0) as total 
+      FROM attendance 
+      WHERE strftime('%Y-%m', date) = ?
+    `, [prevMonth])?.total || 0;
+
+    // 3. Total Advances for Current Month vs Previous Month
     const totalAdvances = get(`
       SELECT COALESCE(SUM(amount), 0) as total 
       FROM advances 
       WHERE strftime('%Y-%m', date) = ?
     `, [currentMonth])?.total || 0;
+
+    const prevTotalAdvances = get(`
+      SELECT COALESCE(SUM(amount), 0) as total 
+      FROM advances 
+      WHERE strftime('%Y-%m', date) = ?
+    `, [prevMonth])?.total || 0;
 
     const totalActiveLoans = get(`
       SELECT COALESCE(SUM(balance_remaining), 0) as total 
@@ -38,7 +73,7 @@ router.get('/metrics', (req, res) => {
       FROM attendance 
       WHERE date = ? 
       GROUP BY status
-    `, [today]);
+    `, [todayStr]);
 
     let present = 0;
     let absent = 0;
@@ -56,10 +91,15 @@ router.get('/metrics', (req, res) => {
     return res.json({
       metrics: {
         totalLabour: totalWorkers,
+        totalLabourTrend: calculateTrend(totalWorkers, prevTotal),
         permanentLabour: permWorkers,
+        permanentLabourTrend: calculateTrend(permWorkers, prevPerm),
         temporaryLabour: tempWorkers,
+        temporaryLabourTrend: calculateTrend(tempWorkers, prevTemp),
         monthlyGrossWages: monthlyGross,
+        monthlyGrossWagesTrend: calculateTrend(monthlyGross, prevMonthlyGross),
         totalAdvances: totalAdvances,
+        totalAdvancesTrend: calculateTrend(totalAdvances, prevTotalAdvances),
         totalActiveLoans: totalActiveLoans,
         todayAttendance: {
           total: totalWorkers,
@@ -82,6 +122,7 @@ router.get('/recent-activity', (req, res) => {
     const recentLabour = query(`
       SELECT id, labour_id, name, worker_type, department, joining_date 
       FROM workers 
+      WHERE is_active = 1
       ORDER BY id DESC 
       LIMIT 5
     `);

@@ -22,6 +22,18 @@ function generateNextLabourId() {
   return 'VK-001';
 }
 
+// 0. Get Distinct Departments
+router.get('/departments', (req, res) => {
+  try {
+    const rows = query('SELECT DISTINCT department FROM workers WHERE department IS NOT NULL AND department != "" ORDER BY department ASC');
+    const departments = rows.map(r => r.department);
+    return res.json({ departments });
+  } catch (err) {
+    console.error('Fetch departments error:', err);
+    return res.status(500).json({ error: 'Failed to fetch departments' });
+  }
+});
+
 // 1. Get All Workers
 router.get('/', (req, res) => {
   try {
@@ -79,7 +91,7 @@ router.post('/', (req, res) => {
     const pinHash = hashPin(defaultPin);
     const today = joiningDate || new Date().toISOString().split('T')[0];
     const type = (workerType || 'PERMANENT').toUpperCase();
-    const dept = department || 'Construction Site A';
+    const dept = department || 'General Site';
     const wage = parseFloat(dailyWage);
 
     run(`
@@ -89,15 +101,19 @@ router.post('/', (req, res) => {
 
     const createdWorker = get('SELECT * FROM workers WHERE labour_id = ?', [nextLabourId]);
 
+    // Fetch company name from settings dynamically
+    const compSetting = get("SELECT value FROM system_settings WHERE key = 'company_name'");
+    const companyName = compSetting?.value || 'VK Traders';
+
     // Prepare Bilingual Welcome Message
     let englishMsg = '';
     let tamilMsg = '';
 
     if (type === 'PERMANENT') {
-      englishMsg = `You are onboarded as a permanent worker at VK Traders. Welcome to the VK Traders family! Have a good day. Your ID: ${nextLabourId}, PIN: ${defaultPin}.`;
+      englishMsg = `You are onboarded as a permanent worker at ${companyName}. Welcome to the ${companyName} family! Have a good day. Your ID: ${nextLabourId}, PIN: ${defaultPin}.`;
       tamilMsg = `நீங்கள் வி.கே ட்ரேடர்ஸில் நிரந்தரப் பணியாளராக சேர்க்கப்பட்டுள்ளீர்கள். வி.கே ட்ரேடர்ஸ் குடும்பத்திற்கு உங்களை அன்புடன் வரவேற்கிறோம்! இனிய நாளாக அமையட்டும். உங்கள் பணியாளர் எண்: ${nextLabourId}, பின்: ${defaultPin}.`;
     } else {
-      englishMsg = `Welcome to VK Traders! You are registered as temporary daily-wage labour. Your ID: ${nextLabourId}, PIN: ${defaultPin}.`;
+      englishMsg = `Welcome to ${companyName}! You are registered as temporary daily-wage labour. Your ID: ${nextLabourId}, PIN: ${defaultPin}.`;
       tamilMsg = `வி.கே ட்ரேடர்ஸுக்கு உங்களை வரவேற்கிறோம்! நீங்கள் தற்காலிக தினசரி கூலி பணியாளராக பதிவு செய்யப்பட்டுள்ளீர்கள். உங்கள் பணியாளர் எண்: ${nextLabourId}, பின்: ${defaultPin}.`;
     }
 
