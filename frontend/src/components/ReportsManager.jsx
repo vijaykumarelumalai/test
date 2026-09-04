@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileSpreadsheet, Download, Printer, Calendar, IndianRupee } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, Calendar, IndianRupee, CheckCheck } from 'lucide-react';
 import { api } from '../api';
 
 export default function ReportsManager() {
@@ -23,11 +23,13 @@ export default function ReportsManager() {
     loadReport();
   }, [targetMonth]);
 
-  const handlePrint = () => {
+  // Export to PDF using browser's high-fidelity print-to-PDF engine
+  const handleExportPdf = () => {
     window.print();
   };
 
-  const handleDownloadCsv = () => {
+  // Export to Excel / CSV
+  const handleExportExcel = () => {
     window.open(`/api/v1/reports/export-csv?month=${targetMonth}`, '_blank');
   };
 
@@ -36,7 +38,7 @@ export default function ReportsManager() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with Export PDF and Export Excel / CSV Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs print:hidden">
         <div>
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Monthly Payroll & Wage Reports</h2>
@@ -45,26 +47,32 @@ export default function ReportsManager() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <input
             type="month"
             value={targetMonth}
             onChange={(e) => setTargetMonth(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 text-xs font-bold text-slate-700 rounded-xl border border-slate-200 outline-hidden"
+            className="px-3.5 py-2.5 bg-slate-50 text-xs font-bold text-slate-700 rounded-xl border border-slate-200 outline-hidden"
           />
+
+          {/* Export PDF Button (Per client requirement) */}
           <button
-            onClick={handleDownloadCsv}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/30 transition"
+            onClick={handleExportPdf}
+            className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-rose-600/30 transition active:scale-95"
+            title="Export as PDF Document"
           >
-            <Download className="w-4 h-4" />
-            <span>Download CSV</span>
+            <FileText className="w-4 h-4" />
+            <span>Export PDF</span>
           </button>
+
+          {/* Export Excel / CSV Button (Per client requirement) */}
           <button
-            onClick={handlePrint}
-            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold flex items-center gap-2 shadow-md transition"
+            onClick={handleExportExcel}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/30 transition active:scale-95"
+            title="Export as Excel / CSV Spreadsheet"
           >
-            <Printer className="w-4 h-4" />
-            <span>Print Report</span>
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>Export Excel / CSV</span>
           </button>
         </div>
       </div>
